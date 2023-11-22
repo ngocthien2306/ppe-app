@@ -4,6 +4,7 @@ import sys
 from ui.background import show_background
 
 if __name__ == "__main__":
+
     show_background()
     app = QApplication(sys.argv)
     window = HomeWindow()
