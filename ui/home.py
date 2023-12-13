@@ -1,19 +1,15 @@
 import sys
 import cv2
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QWidget, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy, QHBoxLayout
-from PyQt5.QtGui import QImage, QPixmap, QFont, QIcon
+from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5 import QtCore
-from utils.image_utils import center_crop, resize_image
 from utils.constant import constant as c
 from utils.project_config import project_config as cf
 from core.gpio_handler import GPIOHandler
 import time
 import datetime
-import logging
 from utils.utils import save_image
 from utils.logging import CustomLoggerConfig
-import threading
 from ui.info import InfoWindow
 from ui.flash import FlashWindow
 import Jetson.GPIO as GPIO
@@ -34,11 +30,11 @@ class HomeWindow(QMainWindow):
         self.detect_yn = False
         self.simulate_yn = False
         self.inference_yn = False
-        self.sound_yn = False
         self.curr_value_enzim = 0
         self.curr_value_open = None
         self.is_done_detect = False
         self.frame_detect_done = None
+        
         self.flash_window = FlashWindow()
         self.flash_window.show()
         self.flash_window.raise_()
@@ -119,6 +115,12 @@ class HomeWindow(QMainWindow):
         self.start_timer()
         
         self.inference_timer = QTimer(self)
+
+        # set update event gpio
+        
+        GPIO.add_event_detect(cf.GPIO_BTN_DETECT, GPIO.RISING, callback=self.start_detect, bouncetime=20)
+        GPIO.add_event_detect(cf.GPIO_BTN_RESET, GPIO.RISING, callback=self.start_detect, bouncetime=20)
+    
     
     def init_camera(self):
         self.camera = cv2.VideoCapture(0)
@@ -133,7 +135,6 @@ class HomeWindow(QMainWindow):
         self.update_button_styles()
        
     def show_info_screen(self):
-        print("clicked info btn")
         self.info_window.close()
         self.info_window.show()
         self.info_window.raise_()
@@ -169,14 +170,13 @@ class HomeWindow(QMainWindow):
         self.timer.start(16)  # Update every 33 milliseconds (approximately 30 fps)
 
     def update_button_by_enzim(self):
+        
         value = GPIO.input(cf.GPIO_ENZIM)
         if value != self.curr_value_enzim:
-            print(value)
             self.curr_value_enzim = value
             if value == GPIO.HIGH:
                 self.gpio_handler.enzim_yn = True
                 self.simulate_yn = True
-                
             elif value == GPIO.LOW:
                 self.gpio_handler.enzim_yn = False
                 self.simulate_yn = False
@@ -186,7 +186,6 @@ class HomeWindow(QMainWindow):
     def update_open_door(self):
         if self.curr_value_open != self.simulate_yn:
             self.curr_value_open = self.simulate_yn
-            
             if not self.gpio_handler.enzim_yn and not self.curr_value_open:
                 self.gpio_handler.output_pass('ON')
             else:
@@ -195,19 +194,16 @@ class HomeWindow(QMainWindow):
     def start_detect(self):
         time_now = str(datetime.datetime.now())
         
-        if not self.inference_yn:
-            self.gpio_handler.output_pass("OFF")
-
         if self.simulate_yn or self.gpio_handler.enzim_yn or (not self.simulate_yn and not self.gpio_handler.enzim_yn and self.detect_yn):
             self.detect_yn = not self.detect_yn
+            if not self.inference_yn:
+                self.gpio_handler.output_pass("OFF")
         
         if self.detect_yn:
             self.inference_yn = True
-            self.sound_yn = True
             self.button.setEnabled(False)
             self.inference_timer.start(800)
             self.start_detect_timer.start(800)
-                
         else: 
             self.update_button_styles()    
             self.frame_detect_done = None   
@@ -215,7 +211,6 @@ class HomeWindow(QMainWindow):
     
     def update(self):
         try: 
-            
             self.update_button_by_enzim()
             self.update_open_door()
             
@@ -232,11 +227,8 @@ class HomeWindow(QMainWindow):
                     
                 if self.inference_yn and is_wrong and self.inference_timer.remainingTime() > 0:
                     self.handle_output(output_frame, is_wrong, mode="ON")
-
-                    
                 elif self.inference_yn and not is_wrong and self.inference_timer.remainingTime() == 0:
                     self.handle_output(output_frame, is_wrong, mode='OFF')
-                    
                     
                 if self.frame_detect_done is not None:
                     self.show_image(self.frame_detect_done)

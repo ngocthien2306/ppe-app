@@ -1,5 +1,4 @@
 import os
-import json
 from pydantic import BaseSettings
 from dotenv import load_dotenv
 
@@ -18,6 +17,8 @@ class ProjectConfig(BaseSettings):
     GPIO_SOUND: int = 7
     GPIO_RESULT: int = 31
     GPIO_ENZIM: int = 18
+    GPIO_BTN_DETECT: int = 22
+    GPIO_BTN_RESET: int = 24
     TRANSPARENT_SCORE = 0.3
     LINE_AREA_COLOR = (94, 73, 52)
     TIMES_OUTPUT: int = 2
