@@ -1,8 +1,8 @@
-import time
 import os
-import cv2
+from utils.project_config import project_config as cf
+import cv2 
 
-def get_path_log(log_path='tracks', sub_path='fail'):
+def get_path_log(log_path='tracks', sub_path=''):
     from datetime import datetime, time
     shifts = [['06:00:00', '13:59:59', 'shift-1'],
               ['14:00:00', '21:59:59', 'shift-2'],
@@ -34,21 +34,9 @@ def get_path_log(log_path='tracks', sub_path='fail'):
 
     return str(os.path.join(sub_path_check, str(current_time))).replace(':', '_').replace('.', '_')
 
-def box_label(frame, box, conf= 0.0, label='', color=(128, 128, 128), text_color=(255, 255, 255)):
-    lw = max(round(sum(frame.shape) / 2 * 0.0005), 2)  # line width
-    p1, p2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
-    cv2.rectangle(frame, p1, p2, color, thickness=lw, lineType=cv2.LINE_AA)
 
-    tf = max(lw - 1, 1)  # font thickness
-    w, h = cv2.getTextSize(label, 0, fontScale=lw / 3, thickness=tf)[0]  # text width, height
-    outside = p1[1] - h >= 3
-    p2 = p1[0] + w + 130, p1[1] - h - 3 if outside else p1[1] + h + 30
-    cv2.rectangle(frame, p1, p2, color, -1, cv2.LINE_AA)  # filled
-    cv2.putText(frame,
-                label + ' - ' + str(round(100 * conf, 1)), (p1[0], p1[1] - 2 if outside else p1[1] + h + 2),
-                0,
-                lw / 2.5,
-                text_color,
-                thickness=tf,
-                lineType=cv2.LINE_AA)
-
+def save_image(image, result: bool, extension: str = '.png'):
+    img_path = get_path_log(os.path.join(cf.LOG_PATH, 'log_pass' if result else 'log_fail')) + extension
+    cv2.imwrite(img_path, image)
+    return img_path 
+    

@@ -11,11 +11,11 @@ def get_screen_resolution():
     return screen_width, screen_height
 
 
-def show_background():
+def show_background(time_ms=3000):
     screen_width, screen_height = get_screen_resolution()
-    background_image = cv2.imread('ui/assets/images/ai_background.png')
+    background_image = cv2.imread('public/assets/images/background.png')
     print(background_image.shape)
-    resized_background = cv2.resize(background_image, (screen_width, screen_height))
+    resized_background = cv2.resize(background_image, (1080, 1920))
     
     x = (screen_width - resized_background.shape[1]) // 2
     y = (screen_height - resized_background.shape[0]) // 2
@@ -25,7 +25,7 @@ def show_background():
     cv2.setWindowProperty('PPE Background',cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
     cv2.moveWindow('PPE Background', x, y)
     cv2.imshow('PPE Background', resized_background)
-    cv2.waitKey(1000) 
+    cv2.waitKey(time_ms) 
     cv2.destroyAllWindows()
     
     

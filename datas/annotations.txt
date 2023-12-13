@@ -1,2 +1,0 @@
-ppe-ok 0
-ppe-fail 1

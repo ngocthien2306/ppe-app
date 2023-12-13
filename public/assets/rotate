@@ -1,0 +1,22 @@
+#!/bin/bash
+
+gsettings set org.gnome.desktop.session idle-delay 0
+
+# Check if the touch device is present
+if xinput list | grep -q ".*_CONTROL"; then
+    # Rotate the display
+    xrandr --output DP-1 --rotate left
+    
+    # Get the ID of the touch device
+    device_id=$(xinput list | grep ".*_CONTROL" | sed -n 's/.*id=\([0-9]*\).*/\1/p')
+    
+    # Set the coordinate transformation matrix for the touch device
+    xinput set-prop "$device_id" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
+    
+    
+    echo "Commands executed successfully for touch device."
+else
+    echo "Touch device not found."
+    # Print the list of input devices for debugging
+    xinput list
+fi
