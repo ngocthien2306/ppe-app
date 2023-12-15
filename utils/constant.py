@@ -17,13 +17,13 @@ class Constant(BaseSettings):
     ENZIN_LABEL_NO_ENZIM_PATH: str = generate_style(icon_path("Button highligt no enzim.png"))
     DISABLE_SIMULATE_PATH: str = generate_style(icon_path("Disable Button highligt.png"))
     DISABLE_BUTTON_PATH: str = generate_style(icon_path("Disable Detect Button highligt.png"))
-    BACKGROUND_PATH: str = generate_style(icon_path("Mask group.png"))
+    BACKGROUND_PATH: str = generate_style(icon_path("Mask group landscape.png"))
     PASS_PATH: str = generate_style(icon_path("button pass.png"))
     FAIL_PATH: str = generate_style(icon_path("button fail.png"))
     INFO_PATH: str = generate_style(icon_path("About.png"))
     CLOSE_PATH: str = generate_style(icon_path("Button Close.png"))
     INFO_BACKGROUND_PATH: str = icon_path("Info.png")
-    LOADING_BACKGROUND_PATH: str = generate_style(icon_path("background.png"))
+    LOADING_BACKGROUND_PATH: str = generate_style(icon_path("ai_background.png"))
     
 
 constant = Constant()

@@ -40,7 +40,7 @@ class FlashWindow(QMainWindow):
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
         container_layout = QVBoxLayout(container_widget)
-        container_layout.setContentsMargins(12, 12, 12, 60)
+        container_layout.setContentsMargins(12, 12, 12, 12)
         self.setCentralWidget(container_widget)
 
         # Create an instance of the LoadingScreen
@@ -50,9 +50,9 @@ class FlashWindow(QMainWindow):
         self.start_loading_screen()
 
     def init_main_window(self):
-        width = 1080
+        width = 1920
         aspect_ratio = 9 / 16  # 9:16
-        height = int(width / aspect_ratio)
+        height = int(width * aspect_ratio)
         self.setGeometry(0, 0, width, height)
         self.setStyleSheet(c.LOADING_BACKGROUND_PATH)
         self.setWindowFlags(Qt.FramelessWindowHint)

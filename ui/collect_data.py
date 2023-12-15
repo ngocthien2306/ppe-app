@@ -133,9 +133,9 @@ class CollectWindow(QMainWindow):
         self.timer.timeout.connect(self.update)
         
     def init_main_window(self):
-        width = 1080
+        width = 1920
         aspect_ratio = 9 / 16  # 9:16
-        height = int(width / aspect_ratio)
+        height = int(width * aspect_ratio)
         self.setGeometry(100, 100, width, height)
         self.setStyleSheet(c.BACKGROUND_PATH)
         self.setWindowFlags(Qt.FramelessWindowHint)

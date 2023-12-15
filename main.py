@@ -2,7 +2,6 @@ import argparse
 from PyQt5.QtWidgets import QApplication
 import sys
 from ui.background import show_background
-import subprocess
 from ui.flash import FlashWindow
 def main(mode):
     if mode == 'deploy':
@@ -24,6 +23,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.mode)
-
-    command = "sh ~/.xprofile"
-    subprocess.run(command, shell=True)

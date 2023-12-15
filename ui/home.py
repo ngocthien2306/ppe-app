@@ -48,7 +48,7 @@ class HomeWindow(QMainWindow):
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
         container_layout = QVBoxLayout(container_widget)
-        container_layout.setContentsMargins(12, 12, 12, 40)
+        container_layout.setContentsMargins(12, 12, 12, 12)
         # Create a QLabel to display the camera feed
         self.camera_label = QLabel(self)
 
@@ -60,7 +60,7 @@ class HomeWindow(QMainWindow):
         self.enzin_label.setEnabled(False)
         button_layout.addWidget(self.enzin_label)
         
-        button_layout.addSpacing(735)
+        button_layout.addSpacing(1500)
         button_layout.setContentsMargins(10, 14, 10, 20)
 
         # Create the second additional button and set its properties
@@ -83,7 +83,7 @@ class HomeWindow(QMainWindow):
         
         center_left_layout = QVBoxLayout()
         center_left_layout.addWidget(self.info_btn, alignment=Qt.AlignRight | Qt.AlignVCenter)
-        center_left_layout.setContentsMargins(10, 1380, 10, 20)
+        center_left_layout.setContentsMargins(10, 700, 30, 10)
         
         # Set up the camera_label layout
         camera_layout = QVBoxLayout(self.camera_label)
@@ -91,8 +91,8 @@ class HomeWindow(QMainWindow):
         camera_layout.addLayout(center_left_layout) 
         camera_layout.addStretch(1)  # Add stretch to push buttons to the top
 
-        container_layout.addWidget(self.camera_label, 4)
-        spacer_item = QSpacerItem(0, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        container_layout.addWidget(self.camera_label, 5)
+        spacer_item = QSpacerItem(0, 1, QSizePolicy.Expanding, QSizePolicy.Minimum)
         container_layout.addItem(spacer_item)
         
         # Create QPushButton
@@ -103,7 +103,7 @@ class HomeWindow(QMainWindow):
         self.button.clicked.connect(self.start_detect)
         self.button.setFixedHeight(166)
     
-        container_layout.addWidget(self.button, 1)  # 1/5 of the space for the button
+        # container_layout.addWidget(self.button, 1)  # 1/5 of the space for the button
 
         # Set the container widget as the central widget
         self.setCentralWidget(container_widget)
@@ -143,9 +143,9 @@ class HomeWindow(QMainWindow):
         self.info_window.raise_()
         self.info_window.showFullScreen()
     def init_main_window(self):
-        width = 1080
+        width = 1920
         aspect_ratio = 9 / 16  # 9:16
-        height = int(width / aspect_ratio)
+        height = int(width * aspect_ratio)
         self.setGeometry(0, 0, width, height)
         self.setStyleSheet(c.BACKGROUND_PATH)
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -219,6 +219,7 @@ class HomeWindow(QMainWindow):
             
             size = self.camera_label.size()
             size_list = [size.width(), size.height()]
+            
 
             ret, frame = self.camera.read()
             if ret:
