@@ -35,8 +35,10 @@ def get_path_log(log_path='tracks', sub_path=''):
     return str(os.path.join(sub_path_check, str(current_time))).replace(':', '_').replace('.', '_')
 
 
-def save_image(image, result: bool, extension: str = '.png'):
+def save_image(image, result: bool, extension: str = '.png', img_size=None):
     img_path = get_path_log(os.path.join(cf.LOG_PATH, 'log_pass' if result else 'log_fail')) + extension
+    if img_size is not None:
+        image = cv2.resize(image, img_size)
     cv2.imwrite(img_path, image)
     return img_path 
     

@@ -26,5 +26,3 @@ class CustomLoggerConfig:
 
         return logger
     
-
-

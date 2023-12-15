@@ -157,7 +157,7 @@ class CollectWindow(QMainWindow):
             size_list = [size.width(), size.height()]
             ret, frame = self.camera.read()
             if ret:
-                output_frame, frame_crop, is_wrong = self._logic.update(frame, size_list, self.detect_yn)
+                output_frame, frame_crop, is_wrong = self._logic.update(frame, size_list, self.detect_yn, True)
                 self.frame_crop = frame_crop.copy()
                 self.show_image(output_frame)
                     

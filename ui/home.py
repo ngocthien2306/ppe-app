@@ -1,8 +1,9 @@
 import sys
 import cv2
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QWidget, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy, QHBoxLayout
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import QImage, QPixmap, QFont, QIcon
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5 import QtCore
 from utils.constant import constant as c
 from utils.project_config import project_config as cf
 from core.gpio_handler import GPIOHandler
@@ -10,6 +11,7 @@ import time
 import datetime
 from utils.utils import save_image
 from utils.logging import CustomLoggerConfig
+import threading
 from ui.info import InfoWindow
 from ui.flash import FlashWindow
 import Jetson.GPIO as GPIO
@@ -135,6 +137,7 @@ class HomeWindow(QMainWindow):
         self.update_button_styles()
        
     def show_info_screen(self):
+        print("clicked info btn")
         self.info_window.close()
         self.info_window.show()
         self.info_window.raise_()
@@ -273,7 +276,7 @@ class HomeWindow(QMainWindow):
         
         self.update_button_styles()
         self.gpio_handler.output_pass(mode)
-        img_path = save_image(output_frame, is_wrong)
+        img_path = save_image(image=output_frame, result=is_wrong, img_size=cf.IMAGE_SIZE)
         self.logger.info(f"Handle classify successful! result: {is_wrong} path: {img_path}")
 
     def closeEvent(self, event):

@@ -1,4 +1,5 @@
 import os
+import json
 from pydantic import BaseSettings
 from dotenv import load_dotenv
 
@@ -29,6 +30,7 @@ class ProjectConfig(BaseSettings):
     ANOTATION_PATH: str = "public/data/annotations.txt"
     CLASSIFY_ENGINE_PATH = "public/models/vit/vit_base_p32_224.py"
     CLASSIFY_ENGINE = "YOLO"
+    IMAGE_SIZE = (224, 351)
     
 project_config = ProjectConfig()
 
