@@ -11,19 +11,20 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Define a Pydantic configuration class
 class ProjectConfig(BaseSettings):
-    RECTANGLES: list = [(215, 383, 841, 1165)]
+    RECTANGLES: list = [(660, 130, 1265, 784)]
     COLORS_MAPPING: dict = {2: (0, 0, 255), 1: (88, 214, 141), 0: (0, 0, 255)}
     WIDTH: int = 1280
     HEIGHT: int = 720
     GPIO_SOUND: int = 7
     GPIO_RESULT: int = 31
     GPIO_ENZIM: int = 18
-    GPIO_BTN_DETECT: int = 22
+    GPIO_INPUT_MACHINE_RUN: int = 22
     GPIO_BTN_RESET: int = 24
     TRANSPARENT_SCORE = 0.3
     LINE_AREA_COLOR = (94, 73, 52)
     TIMES_OUTPUT: int = 2
     MODEL_PATH: str = "public/models/yolo/cls_ppe_l.pt"
+    MODEL_FACE_PATH: str = "public/models/yolo/yolov8-face.pt"
     ROOT_UI_PATH: str = "public/assets/images/"
     LOG_PATH: str = "public/logs"
     COLLECT_PATH: str = "public/collect"

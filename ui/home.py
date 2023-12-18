@@ -32,6 +32,7 @@ class HomeWindow(QMainWindow):
         self.detect_yn = False
         self.simulate_yn = False
         self.inference_yn = False
+        self.status_machine = None
         self.curr_value_enzim = 0
         self.curr_value_open = None
         self.is_done_detect = False
@@ -120,7 +121,7 @@ class HomeWindow(QMainWindow):
 
         # set update event gpio
         
-        GPIO.add_event_detect(cf.GPIO_BTN_DETECT, GPIO.RISING, callback=self.start_detect, bouncetime=20)
+        #GPIO.add_event_detect(cf.GPIO_INPUT_MACHINE_RUN, GPIO.RISING, callback=self.start_detect, bouncetime=20)
         GPIO.add_event_detect(cf.GPIO_BTN_RESET, GPIO.RISING, callback=self.start_detect, bouncetime=20)
     
     
@@ -137,11 +138,11 @@ class HomeWindow(QMainWindow):
         self.update_button_styles()
        
     def show_info_screen(self):
-        print("clicked info btn")
         self.info_window.close()
         self.info_window.show()
         self.info_window.raise_()
         self.info_window.showFullScreen()
+        
     def init_main_window(self):
         width = 1920
         aspect_ratio = 9 / 16  # 9:16
@@ -169,11 +170,9 @@ class HomeWindow(QMainWindow):
         self.update_button_styles()
     
     def start_timer(self):
-        time.sleep(3)
-        self.timer.start(16)  # Update every 33 milliseconds (approximately 30 fps)
+        self.timer.start(33)  # Update every 33 milliseconds (approximately 30 fps)
 
     def update_button_by_enzim(self):
-        
         value = GPIO.input(cf.GPIO_ENZIM)
         if value != self.curr_value_enzim:
             self.curr_value_enzim = value
@@ -211,11 +210,20 @@ class HomeWindow(QMainWindow):
             self.update_button_styles()    
             self.frame_detect_done = None   
             self.is_done_detect = False 
-    
+        
+    def update_status_door(self):
+        value = GPIO.input(cf.GPIO_INPUT_MACHINE_RUN)
+        if self.status_machine != value:
+            self.status_machine = value
+            self.inference_yn = True
+            
+        
+
     def update(self):
         try: 
             self.update_button_by_enzim()
             self.update_open_door()
+            self.update_status_door()
             
             size = self.camera_label.size()
             size_list = [size.width(), size.height()]
@@ -240,7 +248,8 @@ class HomeWindow(QMainWindow):
                     self.show_image(output_frame)
                     
                 self.flash_window.close()
-                    
+            
+                cv2.imwrite('test/test.png', output_frame)
             else:
                 self._reconnect_camera()
                 
@@ -301,3 +310,7 @@ class HomeWindow(QMainWindow):
                 self.simulate_yn = True
                 
             self.update_button_styles()
+            
+        elif event.key() == Qt.Key_P:
+            self.start_detect()
+            

@@ -28,7 +28,7 @@ def draw_rectangle(event, x, y, flags, param):
 # Tạo cửa sổ và liên kết sự kiện chuột với hàm vẽ rectangle
 cv2.namedWindow('image')
 cv2.setMouseCallback('image', draw_rectangle)
-
+img = cv2.imread('test/test.png')
 while True:
     cv2.imshow('image', img)
     key = cv2.waitKey(1) & 0xFF

@@ -61,7 +61,7 @@ class InferenceBase:
 class InferenceYOLO(InferenceBase):
     def __init__(self, model_path: str = "", conf=None):
         super().__init__(model_path, conf)
-        self._model = YOLO(cf.MODEL_PATH)
+        self._model = YOLO(cf.MODEL_PATH, task='classify')
 
     def _predict(self, frame):
         results = self._model.predict(frame, verbose=False)
@@ -82,4 +82,3 @@ class InferenceSwim(InferenceBase):
     def _predict(self, frame):
         result = inference_model(self._model, frame, self._val_pipeline, self._classes_names, self._label_names)
         return result['pred_score'], result['pred_label'] == 1
-
