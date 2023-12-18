@@ -48,7 +48,7 @@ class InferenceBase:
 
         return frame
 
-    def update(self, frame, img_size, detect_yn, start_yn):
+    def update(self, frame, img_size, detect_yn, start_yn, status_machine):
         frame_crop, frame_resize = self._preprocess(frame, img_size)
         if start_yn or self._first_time:
             self._first_time = False

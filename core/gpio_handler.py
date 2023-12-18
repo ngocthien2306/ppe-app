@@ -12,15 +12,15 @@ class GPIOHandler:
         self.update_button_style_yn = False
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup([cf.GPIO_RESULT, cf.GPIO_SOUND], GPIO.OUT)
-        GPIO.setup([cf.GPIO_ENZIM, cf.GPIO_BTN_DETECT, cf.GPIO_BTN_RESET], GPIO.IN)
+        GPIO.setup([cf.GPIO_ENZIM, cf.GPIO_MACHINE_RUN, cf.GPIO_OPEN_DOOR], GPIO.IN)
         
         # GPIO.add_event_detect(cf.GPIO_ENZIM, GPIO.RISING, callback=self.enzim_event_listener_on, bouncetime=20)
         
         # lock filter when initialize
         GPIO.output(cf.GPIO_RESULT, GPIO.HIGH)
         GPIO.output(cf.GPIO_SOUND, GPIO.HIGH)
-        GPIO.input(cf.GPIO_BTN_DETECT)
-        GPIO.input(cf.GPIO_BTN_RESET)
+        GPIO.input(cf.GPIO_MACHINE_RUN)
+        GPIO.input(cf.GPIO_OPEN_DOOR)
     
     def enzim_event_listener_on(self, channel):
         value = GPIO.input(cf.GPIO_ENZIM)

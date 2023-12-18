@@ -35,6 +35,8 @@ class HomeWindow(QMainWindow):
         self.curr_value_enzim = 0
         self.curr_value_open = None
         self.is_done_detect = False
+        self.curr_status_machine = None
+        self.curr_is_wrong_open_door = None
         self.frame_detect_done = None
         
         self.flash_window = FlashWindow()
@@ -91,9 +93,9 @@ class HomeWindow(QMainWindow):
         camera_layout.addLayout(center_left_layout) 
         camera_layout.addStretch(1)  # Add stretch to push buttons to the top
 
-        container_layout.addWidget(self.camera_label, 4)
+        container_layout.addWidget(self.camera_label, 5)
         spacer_item = QSpacerItem(0, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        container_layout.addItem(spacer_item)
+        # container_layout.addItem(spacer_item)
         
         # Create QPushButton
         self.button = QPushButton("", self)
@@ -103,7 +105,7 @@ class HomeWindow(QMainWindow):
         self.button.clicked.connect(self.start_detect)
         self.button.setFixedHeight(166)
     
-        container_layout.addWidget(self.button, 1)  # 1/5 of the space for the button
+        # container_layout.addWidget(self.button, 1)  # 1/5 of the space for the button
 
         # Set the container widget as the central widget
         self.setCentralWidget(container_widget)
@@ -120,8 +122,8 @@ class HomeWindow(QMainWindow):
 
         # set update event gpio
         
-        GPIO.add_event_detect(cf.GPIO_BTN_DETECT, GPIO.RISING, callback=self.start_detect, bouncetime=20)
-        GPIO.add_event_detect(cf.GPIO_BTN_RESET, GPIO.RISING, callback=self.start_detect, bouncetime=20)
+        # GPIO.add_event_detect(cf.GPIO_BTN_DETECT, GPIO.RISING, callback=self.start_detect, bouncetime=20)
+        # GPIO.add_event_detect(cf.GPIO_BTN_RESET, GPIO.RISING, callback=self.start_detect, bouncetime=20)
     
     
     def init_camera(self):
@@ -194,6 +196,20 @@ class HomeWindow(QMainWindow):
             else:
                 self.gpio_handler.output_pass('OFF')
                 
+    def update_status_machine(self):
+        value = GPIO.input(cf.GPIO_MACHINE_RUN)
+        if self.curr_status_machine != value:
+            print(value)
+            self.curr_status_machine = value
+            if value == GPIO.HIGH:
+                self.inference_yn = True
+                self.button.setEnabled(False)
+                self.inference_timer.start(800)
+                self.start_detect_timer.start(800)
+            else:
+                self.inference_yn = False
+                self.inference_timer.stop()
+            
     def start_detect(self):
         time_now = str(datetime.datetime.now())
         
@@ -210,12 +226,13 @@ class HomeWindow(QMainWindow):
         else: 
             self.update_button_styles()    
             self.frame_detect_done = None   
-            self.is_done_detect = False 
+            self.is_done_detect = False  
     
     def update(self):
         try: 
             self.update_button_by_enzim()
             self.update_open_door()
+            self.update_status_machine()
             
             size = self.camera_label.size()
             size_list = [size.width(), size.height()]
@@ -224,13 +241,19 @@ class HomeWindow(QMainWindow):
             if ret:
                 
                 if self.is_done_detect:
-                    output_frame, _, is_wrong = self._logic.update(frame, size_list, False, False)
+                    output_frame, _, is_wrong = self._logic.update(frame, size_list, False, False, False)
                 else:
-                    output_frame, _, is_wrong = self._logic.update(frame, size_list, self.detect_yn, self.simulate_yn)
+                    output_frame, _, is_wrong = self._logic.update(
+                        frame, 
+                        size_list, 
+                        self.detect_yn, 
+                        self.simulate_yn, 
+                        self.curr_status_machine
+                    )
                     
-                if self.inference_yn and is_wrong and self.inference_timer.remainingTime() > 0:
+                if self.inference_yn and is_wrong: # and self.inference_timer.remainingTime() > 0:
                     self.handle_output(output_frame, is_wrong, mode="ON")
-                elif self.inference_yn and not is_wrong and self.inference_timer.remainingTime() == 0:
+                elif self.inference_yn and not is_wrong: # and self.inference_timer.remainingTime() == 0:
                     self.handle_output(output_frame, is_wrong, mode='OFF')
                     
                 if self.frame_detect_done is not None:
@@ -268,11 +291,12 @@ class HomeWindow(QMainWindow):
         time_remaining = self.inference_timer.remainingTime()
         print(f"{time_now}: {time_remaining}")
         
-        self.gpio_handler.output_sound(pass_yn=(True if mode == 'ON' else False))
-        self.is_done_detect = True
+        # self.gpio_handler.output_sound(pass_yn=(True if mode == 'ON' else False))
+        # self.is_done_detect = True
         self.frame_detect_done = output_frame
-        self.inference_yn = False
-        self.inference_timer.stop()
+        if is_wrong:
+            self.inference_yn = False
+            self.inference_timer.stop()
         
         self.update_button_styles()
         self.gpio_handler.output_pass(mode)

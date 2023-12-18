@@ -20,6 +20,8 @@ class ProjectConfig(BaseSettings):
     GPIO_ENZIM: int = 18
     GPIO_BTN_DETECT: int = 22
     GPIO_BTN_RESET: int = 24
+    GPIO_MACHINE_RUN: int = 22
+    GPIO_OPEN_DOOR: int = 24
     TRANSPARENT_SCORE = 0.3
     LINE_AREA_COLOR = (94, 73, 52)
     TIMES_OUTPUT: int = 2
