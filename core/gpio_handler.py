@@ -10,8 +10,9 @@ class GPIOHandler:
         self.detect_yn = False
         self.reset_yn = False
         self.update_button_style_yn = False
+        self._is_first_time = True
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup([cf.GPIO_RESULT, cf.GPIO_SOUND], GPIO.OUT)
+        GPIO.setup([cf.GPIO_RESULT, cf.GPIO_SOUND, cf.GPIO_READY], GPIO.OUT)
         GPIO.setup([cf.GPIO_ENZIM, cf.GPIO_MACHINE_RUN, cf.GPIO_OPEN_DOOR], GPIO.IN)
         
         # GPIO.add_event_detect(cf.GPIO_ENZIM, GPIO.RISING, callback=self.enzim_event_listener_on, bouncetime=20)
@@ -21,7 +22,15 @@ class GPIOHandler:
         GPIO.output(cf.GPIO_SOUND, GPIO.HIGH)
         GPIO.input(cf.GPIO_MACHINE_RUN)
         GPIO.input(cf.GPIO_OPEN_DOOR)
+        
+        # self.initialize_ready_output()
     
+    def initialize_ready_output(self):
+        if self._is_first_time :
+            GPIO.output(cf.GPIO_READY, GPIO.LOW)
+            print("Output Ready Start")
+            self._is_first_time = False
+        
     def enzim_event_listener_on(self, channel):
         value = GPIO.input(cf.GPIO_ENZIM)
         if value == GPIO.HIGH:
@@ -58,6 +67,7 @@ class GPIOHandler:
         sound_thread.start()
         
     def _output_pass_in_thread(self, mode='ON'):
+        print(mode)
         if mode == 'ON':
             GPIO.output(cf.GPIO_RESULT, GPIO.LOW)
         else:

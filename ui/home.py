@@ -9,6 +9,7 @@ from utils.project_config import project_config as cf
 from core.gpio_handler import GPIOHandler
 import time
 import datetime
+from utils.image_utils import draw_area_done
 from utils.utils import save_image
 from utils.logging import CustomLoggerConfig
 import threading
@@ -50,7 +51,7 @@ class HomeWindow(QMainWindow):
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
         container_layout = QVBoxLayout(container_widget)
-        container_layout.setContentsMargins(12, 12, 12, 40)
+        container_layout.setContentsMargins(12, 12, 12, 20)
         # Create a QLabel to display the camera feed
         self.camera_label = QLabel(self)
 
@@ -58,7 +59,7 @@ class HomeWindow(QMainWindow):
 
         self.enzin_label = QPushButton("", self)
         self.enzin_label.setFixedHeight(132)
-        self.enzin_label.setFixedWidth(147)
+        self.enzin_label.setFixedWidth(165)
         self.enzin_label.setEnabled(False)
         button_layout.addWidget(self.enzin_label)
         
@@ -68,7 +69,7 @@ class HomeWindow(QMainWindow):
         # Create the second additional button and set its properties
         self.simulate_btn = QPushButton("", self)
         self.simulate_btn.setFixedHeight(132)
-        self.simulate_btn.setFixedWidth(149)
+        self.simulate_btn.setFixedWidth(156)
         self.simulate_btn.setFocusPolicy(Qt.NoFocus)
         
         self.simulate_btn.clicked.connect(self.on_simulate_btn_click)
@@ -85,18 +86,24 @@ class HomeWindow(QMainWindow):
         
         center_left_layout = QVBoxLayout()
         center_left_layout.addWidget(self.info_btn, alignment=Qt.AlignRight | Qt.AlignVCenter)
-        center_left_layout.setContentsMargins(10, 1380, 10, 20)
+        center_left_layout.setContentsMargins(10, 30, 10, 20)
         
         # Set up the camera_label layout
         camera_layout = QVBoxLayout(self.camera_label)
-        camera_layout.addLayout(button_layout)
+        # camera_layout.addLayout(button_layout)
         camera_layout.addLayout(center_left_layout) 
         camera_layout.addStretch(1)  # Add stretch to push buttons to the top
 
         container_layout.addWidget(self.camera_label, 5)
-        spacer_item = QSpacerItem(0, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        # container_layout.addItem(spacer_item)
+        spacer_item = QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        container_layout.addItem(spacer_item)
         
+        
+        # Create a QLabel to serve as a container for the buttons
+        self.button_b_container = QLabel(self)
+        self.button_b_container.setFixedHeight(200)  # Set an appropriate height
+        self.button_b_container.setStyleSheet(c.BUTTON_BG_PATH)  # Set the path to your image
+
         # Create QPushButton
         self.button = QPushButton("", self)
         self.button.setEnabled(True)
@@ -104,9 +111,33 @@ class HomeWindow(QMainWindow):
         self.start_detect_timer.timeout.connect(self.enable_start_detect_button)
         self.button.clicked.connect(self.start_detect)
         self.button.setFixedHeight(166)
-    
-        # container_layout.addWidget(self.button, 1)  # 1/5 of the space for the button
-
+        
+        button_b_layout = QHBoxLayout(self.button_b_container)
+        self.button_machine = QPushButton("", self)
+        self.button_machine.setFixedHeight(132)
+        self.button_machine.setFixedWidth(176)
+        self.button_machine.setEnabled(False)
+        
+        self.button_door = QPushButton("", self)
+        self.button_door.setFixedHeight(130)
+        self.button_door.setFixedWidth(132)
+        self.button_door.setEnabled(False)
+        
+        button_b_layout.setContentsMargins(0, 14, 0, 14)
+        button_b_layout.addSpacing(10)
+        button_b_layout.addWidget(self.enzin_label)
+        button_b_layout.addSpacing(25)
+        button_b_layout.addWidget(self.button_machine)
+        button_b_layout.addSpacing(38)
+        button_b_layout.addWidget(self.button_door)
+        button_b_layout.addSpacing(350)
+        button_b_layout.addWidget(self.simulate_btn)
+        button_b_layout.addSpacing(10)
+        
+        # container_layout.addSpacing(100)  # Adjust as needed
+        container_layout.addWidget(self.button_b_container, 1)
+        
+        # container_layout.addLayout(button_b_layout, 1)  # 1/5 of the space for the button
         # Set the container widget as the central widget
         self.setCentralWidget(container_widget)
 
@@ -123,8 +154,8 @@ class HomeWindow(QMainWindow):
         # set update event gpio
         
         # GPIO.add_event_detect(cf.GPIO_BTN_DETECT, GPIO.RISING, callback=self.start_detect, bouncetime=20)
-        # GPIO.add_event_detect(cf.GPIO_BTN_RESET, GPIO.RISING, callback=self.start_detect, bouncetime=20)
-    
+        
+        GPIO.add_event_detect(cf.GPIO_OPEN_DOOR, GPIO.FALLING, callback=self.reset, bouncetime=20)
     
     def init_camera(self):
         self.camera = cv2.VideoCapture(0)
@@ -144,6 +175,7 @@ class HomeWindow(QMainWindow):
         self.info_window.show()
         self.info_window.raise_()
         self.info_window.showFullScreen()
+        
     def init_main_window(self):
         width = 1080
         aspect_ratio = 9 / 16  # 9:16
@@ -154,6 +186,11 @@ class HomeWindow(QMainWindow):
         self.showFullScreen()
     
     def update_button_styles(self):
+        machine_status = c.MACHINE_ON_PATH if self.curr_status_machine else c.MACHINE_OFF_PATH
+        door_status = c.DOOR_CLOSE_PATH if self.curr_is_wrong_open_door else c.DOOR_OPEN_PATH
+        
+        self.button_door.setStyleSheet(door_status)
+        self.button_machine.setStyleSheet(machine_status)
         self.info_btn.setStyleSheet(c.INFO_PATH)
         enzim_style = c.ENZIN_LABEL_ENZIM_PATH if self.gpio_handler.enzim_yn else c.ENZIN_LABEL_NO_ENZIM_PATH
         self.enzin_label.setStyleSheet(enzim_style)
@@ -178,11 +215,13 @@ class HomeWindow(QMainWindow):
         
         value = GPIO.input(cf.GPIO_ENZIM)
         if value != self.curr_value_enzim:
+            print(f"curr_value_enzim: {value}")
+            
             self.curr_value_enzim = value
-            if value == GPIO.HIGH:
+            if value == GPIO.LOW:
                 self.gpio_handler.enzim_yn = True
                 self.simulate_yn = True
-            elif value == GPIO.LOW:
+            elif value == GPIO.HIGH:
                 self.gpio_handler.enzim_yn = False
                 self.simulate_yn = False
 
@@ -199,9 +238,42 @@ class HomeWindow(QMainWindow):
     def update_status_machine(self):
         value = GPIO.input(cf.GPIO_MACHINE_RUN)
         if self.curr_status_machine != value:
-            print(value)
+            print(f"curr_status_machine: {value}")
             self.curr_status_machine = value
-            if value == GPIO.HIGH:
+            if value == GPIO.LOW:
+                if self.gpio_handler.enzim_yn or self.simulate_yn:
+                    self.inference_yn = True
+                    self.button.setEnabled(False)
+                    self.inference_timer.start(800)
+                    self.start_detect_timer.start(800)
+                else:
+                    self.inference_yn = False
+                    self.inference_timer.stop()
+            else:
+                self.frame_detect_done = None
+                self.inference_yn = False
+                self.inference_timer.stop()
+                
+            self.update_button_styles()
+            
+    def update_status_error_door(self):
+        value = GPIO.input(cf.GPIO_OPEN_DOOR)
+        if self.curr_is_wrong_open_door != value:
+            print(f"curr_is_wrong_open_door: {value}")
+            self.curr_is_wrong_open_door = value
+            # if value == GPIO.LOW:
+            #     self.frame_detect_done = None
+            # else:
+            #     self.inference_yn = False
+            #     self.inference_timer.stop()
+                
+            self.update_button_styles()
+            
+    def reset(self, channel):
+        print(channel)
+        self.frame_detect_done = None
+        if self.curr_status_machine == GPIO.LOW:
+            if self.gpio_handler.enzim_yn or self.simulate_yn:
                 self.inference_yn = True
                 self.button.setEnabled(False)
                 self.inference_timer.start(800)
@@ -209,6 +281,9 @@ class HomeWindow(QMainWindow):
             else:
                 self.inference_yn = False
                 self.inference_timer.stop()
+        else:
+            self.inference_yn = False
+            self.inference_timer.stop()
             
     def start_detect(self):
         time_now = str(datetime.datetime.now())
@@ -233,6 +308,7 @@ class HomeWindow(QMainWindow):
             self.update_button_by_enzim()
             self.update_open_door()
             self.update_status_machine()
+            self.update_status_error_door()
             
             size = self.camera_label.size()
             size_list = [size.width(), size.height()]
@@ -252,7 +328,10 @@ class HomeWindow(QMainWindow):
                     )
                     
                 if self.inference_yn and is_wrong: # and self.inference_timer.remainingTime() > 0:
+                    output_frame = draw_area_done(output_frame, is_wrong)
                     self.handle_output(output_frame, is_wrong, mode="ON")
+                    self.frame_detect_done = output_frame
+                    
                 elif self.inference_yn and not is_wrong: # and self.inference_timer.remainingTime() == 0:
                     self.handle_output(output_frame, is_wrong, mode='OFF')
                     
@@ -262,7 +341,9 @@ class HomeWindow(QMainWindow):
                     self.show_image(output_frame)
                     
                 self.flash_window.close()
-                    
+                
+                self.gpio_handler.initialize_ready_output()
+                
             else:
                 self._reconnect_camera()
                 
@@ -291,9 +372,9 @@ class HomeWindow(QMainWindow):
         time_remaining = self.inference_timer.remainingTime()
         print(f"{time_now}: {time_remaining}")
         
-        # self.gpio_handler.output_sound(pass_yn=(True if mode == 'ON' else False))
+        self.gpio_handler.output_sound(pass_yn=(True if mode == 'ON' else False))
         # self.is_done_detect = True
-        self.frame_detect_done = output_frame
+
         if is_wrong:
             self.inference_yn = False
             self.inference_timer.stop()

@@ -16,10 +16,9 @@ class ProjectConfig(BaseSettings):
     WIDTH: int = 1280
     HEIGHT: int = 720
     GPIO_SOUND: int = 7
+    GPIO_READY: int = 33
     GPIO_RESULT: int = 31
     GPIO_ENZIM: int = 18
-    GPIO_BTN_DETECT: int = 22
-    GPIO_BTN_RESET: int = 24
     GPIO_MACHINE_RUN: int = 22
     GPIO_OPEN_DOOR: int = 24
     TRANSPARENT_SCORE = 0.3

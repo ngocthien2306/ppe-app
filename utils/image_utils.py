@@ -86,6 +86,22 @@ def draw_area(area_config, image, color=(60, 76, 231)):
     return image
 
 
+def draw_area_done(frame, cls_id):
+    ms = 20  # margin size
+    area_config = [[ms, ms],
+                [frame.shape[1] - ms, ms],
+                [frame.shape[1] - ms, frame.shape[0] - ms],
+                [ms, frame.shape[0] - ms]]
+    
+
+    if cls_id == 0:
+        frame = draw_area(area_config, frame)
+    else:
+        frame = draw_area(area_config, frame, (64, 174, 110))
+
+    return frame
+
+
 def add_margin_to_polygon(original_points, margin):
     # Extract coordinates of the original points
     x_coords, y_coords = zip(*original_points)

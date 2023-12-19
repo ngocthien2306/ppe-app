@@ -160,4 +160,6 @@ cython_debug/
 #.idea/
 ppe-env/
 public/models
+public/logs/log_fail
+public/logs/log_pass
 

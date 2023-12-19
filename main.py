@@ -4,6 +4,13 @@ import sys
 from ui.background import show_background
 import subprocess
 from ui.flash import FlashWindow
+from PyQt5.QtCore import Qt, QCoreApplication
+
+def on_application_exit():
+    # This function will be called when the application is about to exit
+    print("Application is about to exit.")
+
+
 def main(mode):
     if mode == 'deploy':
         from ui.home import HomeWindow as MainWindow
