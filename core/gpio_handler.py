@@ -18,7 +18,7 @@ class GPIOHandler:
         # lock filter when initialize
         GPIO.output(cf.GPIO_RESULT, GPIO.HIGH)
         
-        GPIO.output(cf.GPIO_SOUND, GPIO.HIGH)
+        GPIO.output(cf.GPIO_SOUND, GPIO.LOW)
     
     def initialize_ready_output(self):
         if self._is_first_time :
@@ -45,9 +45,9 @@ class GPIOHandler:
         if pass_yn:
             for i in range(cf.TIMES_OUTPUT):
                 time_now = datetime.now()
-                GPIO.output(cf.GPIO_SOUND, GPIO.LOW)
-                time.sleep(0.2)
                 GPIO.output(cf.GPIO_SOUND, GPIO.HIGH)
+                time.sleep(0.2)
+                GPIO.output(cf.GPIO_SOUND, GPIO.LOW)
                 time.sleep(0.1)
         else:
             GPIO.output(cf.GPIO_SOUND, GPIO.LOW)
