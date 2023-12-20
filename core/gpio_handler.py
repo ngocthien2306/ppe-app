@@ -15,15 +15,10 @@ class GPIOHandler:
         GPIO.setup([cf.GPIO_RESULT, cf.GPIO_SOUND, cf.GPIO_READY], GPIO.OUT)
         GPIO.setup([cf.GPIO_ENZIM, cf.GPIO_MACHINE_RUN, cf.GPIO_OPEN_DOOR], GPIO.IN)
         
-        # GPIO.add_event_detect(cf.GPIO_ENZIM, GPIO.RISING, callback=self.enzim_event_listener_on, bouncetime=20)
-        
         # lock filter when initialize
         GPIO.output(cf.GPIO_RESULT, GPIO.HIGH)
-        GPIO.output(cf.GPIO_SOUND, GPIO.HIGH)
-        GPIO.input(cf.GPIO_MACHINE_RUN)
-        GPIO.input(cf.GPIO_OPEN_DOOR)
         
-        # self.initialize_ready_output()
+        GPIO.output(cf.GPIO_SOUND, GPIO.HIGH)
     
     def initialize_ready_output(self):
         if self._is_first_time :
