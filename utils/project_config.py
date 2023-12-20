@@ -15,11 +15,10 @@ class ProjectConfig(BaseSettings):
     COLORS_MAPPING: dict = {2: (0, 0, 255), 1: (88, 214, 141), 0: (0, 0, 255)}
     WIDTH: int = 1280
     HEIGHT: int = 720
-    
     GPIO_SOUND: int = 19
     GPIO_READY: int = 31
     GPIO_RESULT: int = 33
-     
+    
     GPIO_ENZIM: int = 18
     GPIO_MACHINE_RUN: int = 22
     GPIO_OPEN_DOOR: int = 16
@@ -32,7 +31,7 @@ class ProjectConfig(BaseSettings):
     LOG_PATH: str = "public/logs"
     COLLECT_PATH: str = "public/collect"
     ANOTATION_PATH: str = "public/data/annotations.txt"
-    CLASSIFY_ENGINE_PATH26 = "public/models/vit/vit_base_p32_224.py"
+    CLASSIFY_ENGINE_PATH = "public/models/vit/vit_base_p32_224.py"
     CLASSIFY_ENGINE = "YOLO"
     IMAGE_SIZE = (224, 351)
     

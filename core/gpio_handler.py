@@ -14,12 +14,13 @@ class GPIOHandler:
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup([cf.GPIO_RESULT, cf.GPIO_SOUND, cf.GPIO_READY], GPIO.OUT)
         GPIO.setup([cf.GPIO_ENZIM, cf.GPIO_MACHINE_RUN, cf.GPIO_OPEN_DOOR], GPIO.IN)
-        
+
         # lock filter when initialize
         GPIO.output(cf.GPIO_RESULT, GPIO.HIGH)
         
         GPIO.output(cf.GPIO_SOUND, GPIO.LOW)
-    
+
+
     def initialize_ready_output(self):
         if self._is_first_time :
             GPIO.output(cf.GPIO_READY, GPIO.LOW)
