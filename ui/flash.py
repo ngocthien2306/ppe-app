@@ -67,7 +67,7 @@ class FlashWindow(QMainWindow):
         
     def simulate_long_running_task(self):
         # Simulate a long-running task (replace this with your actual task)
-        for i in range(150):
+        for i in range(10):
             QApplication.processEvents()
             # Simulate some work
             import time

@@ -46,7 +46,7 @@ class CollectWindow(QMainWindow):
 
         self.enzin_label = QPushButton("", self)
         self.enzin_label.setFixedHeight(132)
-        self.enzin_label.setFixedWidth(147)
+        self.enzin_label.setFixedWidth(160)
         self.enzin_label.setEnabled(False)
         button_layout.addWidget(self.enzin_label)
         button_layout.addSpacing(735)
@@ -59,6 +59,7 @@ class CollectWindow(QMainWindow):
         self.simulate_btn.setFont(font)
         self.simulate_btn.setFixedHeight(132)
         self.simulate_btn.setFixedWidth(300)
+        
 
         # Add the second button to the layout
         button_layout.addWidget(self.simulate_btn)
@@ -142,7 +143,7 @@ class CollectWindow(QMainWindow):
         self.showFullScreen()
     
     def update_button_styles(self):
-        self.enzin_label.setStyleSheet(c.ENZIN_LABEL_NO_ENZIM_PATH)
+        # self.enzin_label.setStyleSheet(c.ENZIN_LABEL_NO_ENZIM_PATH)
         self.pass_button.setStyleSheet(c.PASS_PATH)
         self.fail_button.setStyleSheet(c.FAIL_PATH)
     

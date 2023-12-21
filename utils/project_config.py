@@ -15,13 +15,15 @@ class ProjectConfig(BaseSettings):
     COLORS_MAPPING: dict = {2: (0, 0, 255), 1: (88, 214, 141), 0: (0, 0, 255)}
     WIDTH: int = 1280
     HEIGHT: int = 720
+    
     GPIO_SOUND: int = 19
     GPIO_READY: int = 31
     GPIO_RESULT: int = 33
-    
-    GPIO_ENZIM: int = 18
-    GPIO_MACHINE_RUN: int = 22
-    GPIO_OPEN_DOOR: int = 16
+    GPIO_ERROR: int = 35
+     
+    GPIO_ENZIM: int = 16
+    GPIO_MACHINE_RUN: int = 18
+    GPIO_OPEN_DOOR: int = 22
     
     TRANSPARENT_SCORE = 0.3
     LINE_AREA_COLOR = (94, 73, 52)
@@ -34,6 +36,15 @@ class ProjectConfig(BaseSettings):
     CLASSIFY_ENGINE_PATH = "public/models/vit/vit_base_p32_224.py"
     CLASSIFY_ENGINE = "YOLO"
     IMAGE_SIZE = (224, 351)
+    
+    STATE_INTERLOCK = 0 # Interlock at block -> state = 0, the oposite is None -> state = 1
+    STATE_MACHINE = 0 # Machine running 
+    STATE_ENZYME = 0 # Enzyme on
+    STATE_DOOR = 1 # Close
+    
+    STATE_BUZER = 1 # on
+    STATE_READY = 1 # system ready
+    
     
 project_config = ProjectConfig()
 

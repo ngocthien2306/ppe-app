@@ -16,14 +16,14 @@ class GPIOHandler:
         GPIO.setup([cf.GPIO_ENZIM, cf.GPIO_MACHINE_RUN, cf.GPIO_OPEN_DOOR], GPIO.IN)
 
         # lock filter when initialize
-        GPIO.output(cf.GPIO_RESULT, GPIO.HIGH)
+        GPIO.output(cf.GPIO_RESULT, cf.STATE_INTERLOCK) 
         
-        GPIO.output(cf.GPIO_SOUND, GPIO.LOW)
+        GPIO.output(cf.GPIO_SOUND, not cf.STATE_BUZER)
 
 
-    def initialize_ready_output(self):
+    def initialize_ready_output(self):  
         if self._is_first_time :
-            GPIO.output(cf.GPIO_READY, GPIO.LOW)
+            GPIO.output(cf.GPIO_READY, cf.STATE_READY)
             print("Output Ready Start")
             self._is_first_time = False
         
@@ -46,14 +46,11 @@ class GPIOHandler:
         if pass_yn:
             for i in range(cf.TIMES_OUTPUT):
                 time_now = datetime.now()
-                GPIO.output(cf.GPIO_SOUND, GPIO.HIGH)
+                GPIO.output(cf.GPIO_SOUND, cf.STATE_BUZER)
                 time.sleep(0.2)
-                GPIO.output(cf.GPIO_SOUND, GPIO.LOW)
+                GPIO.output(cf.GPIO_SOUND, not cf.STATE_BUZER)
                 time.sleep(0.1)
-        else:
-            GPIO.output(cf.GPIO_SOUND, GPIO.LOW)
-            time.sleep(1)
-            GPIO.output(cf.GPIO_SOUND, GPIO.HIGH)
+
             
     # mode 'ON' =  GPIO.LOW
     
@@ -65,9 +62,9 @@ class GPIOHandler:
     def _output_pass_in_thread(self, mode='ON'):
         print(mode)
         if mode == 'ON':
-            GPIO.output(cf.GPIO_RESULT, GPIO.LOW)
+            GPIO.output(cf.GPIO_RESULT, not cf.STATE_INTERLOCK)
         else:
-            GPIO.output(cf.GPIO_RESULT, GPIO.HIGH)
+            GPIO.output(cf.GPIO_RESULT, cf.STATE_INTERLOCK)
             
     def cleanup(self):
         GPIO.cleanup()
