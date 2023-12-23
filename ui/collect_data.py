@@ -47,7 +47,9 @@ class CollectWindow(QMainWindow):
         self.enzin_label = QPushButton("", self)
         self.enzin_label.setFixedHeight(132)
         self.enzin_label.setFixedWidth(160)
-        self.enzin_label.setEnabled(False)
+        # self.enzin_label.setEnabled(False)
+        self.enzin_label.clicked.connect(self.show_home)
+        
         button_layout.addWidget(self.enzin_label)
         button_layout.addSpacing(735)
         button_layout.setContentsMargins(10, 14, 10, 20)
@@ -106,7 +108,24 @@ class CollectWindow(QMainWindow):
 
         # Start the camera when the program starts
         self.start_timer()
-        
+    
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            print("Left mouse button double-clicked")
+            self.close()
+        elif event.button() == Qt.RightButton:
+            print("Right mouse button double-clicked")
+    
+    def show_home(self):
+        self.camera.release()
+        self.timer.stop()
+        from ui.home import HomeWindow
+        self.close()
+        home_window = HomeWindow()
+        home_window.show()
+        home_window.raise_()
+        home_window.showFullScreen()
+    
     def pass_action(self):
         img_path = os.path.join(cf.COLLECT_PATH, 'ok', f"{time.time()}_pass.png")
         cv2.imwrite(img_path, self.frame_crop)
@@ -143,7 +162,7 @@ class CollectWindow(QMainWindow):
         self.showFullScreen()
     
     def update_button_styles(self):
-        # self.enzin_label.setStyleSheet(c.ENZIN_LABEL_NO_ENZIM_PATH)
+        self.enzin_label.setStyleSheet(c.ENZIN_LABEL_NO_ENZIM_PATH)
         self.pass_button.setStyleSheet(c.PASS_PATH)
         self.fail_button.setStyleSheet(c.FAIL_PATH)
     

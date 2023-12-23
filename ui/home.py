@@ -93,6 +93,8 @@ class HomeWindow(QMainWindow):
         center_right_layout.addWidget(self.collect, alignment=Qt.AlignLeft | Qt.AlignVCenter)
         center_right_layout.setContentsMargins(10, 10, 10, 20)
         
+        
+        
         center_left_layout = QVBoxLayout()
         center_left_layout.addWidget(self.info_btn, alignment=Qt.AlignRight | Qt.AlignVCenter)
         center_left_layout.setContentsMargins(10, 10, 10, 20)
@@ -153,6 +155,7 @@ class HomeWindow(QMainWindow):
         self.start_timer()
 
         self.inference_timer = QTimer(self)
+        
 
     def init_camera(self):
         self.camera = cv2.VideoCapture(0)
@@ -162,15 +165,16 @@ class HomeWindow(QMainWindow):
         self.timer.timeout.connect(self.update)
 
     def show_collect_screen(self):
+        print("show_collect_screen")
         self.camera.release()
         self.timer.stop()
-        self.gpio_handler.cleanup()
         from ui.collect_data import CollectWindow
         self.close()
         collect_window = CollectWindow()
         collect_window.show()
-        collect_window.raise_()
+        # collect_window.raise_()
         collect_window.showFullScreen()
+        
     
     def show_info_screen(self):
         self.info_window.close()
@@ -188,6 +192,9 @@ class HomeWindow(QMainWindow):
         self.showFullScreen()
     
     def update_button_styles(self):
+        
+        self.collect.setStyleSheet("background-color: transparent; color: white; border: none;")
+        
         machine_status = c.MACHINE_ON_PATH if self.curr_status_machine == cf.STATE_MACHINE else c.MACHINE_OFF_PATH
         door_status = c.DOOR_CLOSE_PATH if self.curr_is_wrong_open_door == cf.STATE_DOOR else c.DOOR_OPEN_PATH
         
