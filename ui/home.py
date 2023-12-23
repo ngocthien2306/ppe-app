@@ -250,8 +250,8 @@ class HomeWindow(QMainWindow):
             
     def reset_program(self):
         self.update_status_machine()
-        if self.curr_status_machine == cf.STATE_MACHINE:
-            self.reset_ui_and_interlock()
+        # if self.curr_status_machine == cf.STATE_MACHINE:
+        self.reset_ui_and_interlock()
             
     def update_logic(self):
         
