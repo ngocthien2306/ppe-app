@@ -153,10 +153,8 @@ class HomeWindow(QMainWindow):
 
         # Start the camera when the program starts
         self.start_timer()
-
         self.inference_timer = QTimer(self)
         
-
     def init_camera(self):
         self.camera = cv2.VideoCapture(0)
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -168,11 +166,12 @@ class HomeWindow(QMainWindow):
         print("show_collect_screen")
         self.camera.release()
         self.timer.stop()
-        from ui.collect_data import CollectWindow
         self.close()
+
+        from ui.collect_data import CollectWindow
         collect_window = CollectWindow()
         collect_window.show()
-        # collect_window.raise_()
+        collect_window.raise_()
         collect_window.showFullScreen()
         
     
