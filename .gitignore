@@ -159,7 +159,9 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 ppe-env/
-public/models
+public/models/mbvit
+public/models/swim
+public/models/vit
 public/logs/log_fail
 public/logs/log_pass
 
