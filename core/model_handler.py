@@ -16,7 +16,8 @@ class InferenceBase:
         self._first_time = True
     def _preprocess(self, frame, size_list):
         frame_copy = frame.copy()
-        frame_copy = resize_image(frame_copy, size_list[1])
+        frame_copy = cv2.rotate(frame_copy, cv2.ROTATE_90_CLOCKWISE)
+        frame_copy = resize_image(frame_copy, size_list[0])
         frame_crop = center_crop(frame_copy, size_list)
         frame_resize = cv2.resize(frame_crop, tuple(size_list))
         frame_resize = cv2.flip(frame_resize, 1)

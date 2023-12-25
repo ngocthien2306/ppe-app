@@ -11,7 +11,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Define a Pydantic configuration class
 class ProjectConfig(BaseSettings):
-    RECTANGLES: list = [(215, 383, 841, 1165)]
+    RECTANGLES: list = [(500, 90, 1200, 970)]
     COLORS_MAPPING: dict = {2: (0, 0, 255), 1: (88, 214, 141), 0: (0, 0, 255)}
     WIDTH: int = 1280
     HEIGHT: int = 720

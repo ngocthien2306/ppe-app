@@ -37,8 +37,8 @@ class CollectWindow(QMainWindow):
 
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
-        container_layout = QVBoxLayout(container_widget)
-        container_layout.setContentsMargins(12, 12, 12, 40)
+        container_layout = QHBoxLayout(container_widget)
+        # container_layout.setContentsMargins(12, 12, 12, 40)
         # Create a QLabel to display the camera feed
         self.camera_label = QLabel(self)
 
@@ -52,7 +52,7 @@ class CollectWindow(QMainWindow):
         
         button_layout.addWidget(self.enzin_label)
         button_layout.addSpacing(735)
-        button_layout.setContentsMargins(10, 14, 10, 20)
+        # button_layout.setContentsMargins(10, 14, 10, 20)
 
         # Create the second additional button and set its properties
         self.simulate_btn = QPushButton(self.count_sample_text(), self)

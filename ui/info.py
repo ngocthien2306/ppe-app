@@ -25,13 +25,13 @@ class InfoWindow(QMainWindow):
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
         container_layout = QVBoxLayout(container_widget)
-        container_layout.setContentsMargins(12, 12, 12, 55)
+        # container_layout.setContentsMargins(12, 12, 12, 55)
         # Create a QLabel to display the camera feed
         self.camera_label = QLabel(self)
 
         container_layout.addWidget(self.camera_label, 4)
-        spacer_item = QSpacerItem(0, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        container_layout.addItem(spacer_item)
+        # spacer_item = QSpacerItem(0, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        # container_layout.addItem(spacer_item)
         
         # Create buttons
         self.close_button = QPushButton("", self)
@@ -53,10 +53,10 @@ class InfoWindow(QMainWindow):
         self.update_button_styles()
         
     def init_main_window(self):
-        width = 1080
+        width = 1920
         aspect_ratio = 9 / 16  # 9:16
 
-        height = int(width / aspect_ratio)
+        height = int(width * aspect_ratio)
         self.setGeometry(100, 100, width, height)
         self.setStyleSheet(c.BACKGROUND_PATH)
         self.setWindowFlags(Qt.FramelessWindowHint)

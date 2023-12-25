@@ -1,7 +1,6 @@
 import argparse
 from PyQt5.QtWidgets import QApplication
 import sys
-from ui.background import show_background
 import subprocess
 from ui.flash import FlashWindow
 from PyQt5.QtCore import Qt, QCoreApplication
@@ -17,7 +16,6 @@ def main(mode):
     elif mode == 'collect':
         from ui.collect_data import CollectWindow as MainWindow
 
-    # show_background()
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()

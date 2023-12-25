@@ -19,14 +19,14 @@ def center_crop(img, dim):
     
 	return crop_img
 
-def resize_image(image, target_height):
-	original_height, original_width = image.shape[:2]
+def resize_image(image, target_width):
+    original_height, original_width = image.shape[:2]
+    scale_factor = target_width / original_width
+    new_height = int(original_height * scale_factor)
+    resized_image = cv2.resize(image, (target_width, new_height))
 
-	scale_factor = target_height / original_height
+    return resized_image
 
-	resized_image = cv2.resize(image, (int(original_width * scale_factor), target_height))
-
-	return resized_image
 
 def center_crop_width(img, crop_width):
     """

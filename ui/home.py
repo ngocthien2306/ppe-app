@@ -49,12 +49,12 @@ class HomeWindow(QMainWindow):
         
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
-        container_layout = QVBoxLayout(container_widget)
-        container_layout.setContentsMargins(12, 12, 12, 20)
+        container_layout = QHBoxLayout(container_widget)
+        container_layout.setContentsMargins(0, 0, 0, 0)
         # Create a QLabel to display the camera feed
         self.camera_label = QLabel(self)
 
-        button_layout = QHBoxLayout()
+        button_layout = QVBoxLayout()
 
         self.enzin_label = QPushButton("", self)
         self.enzin_label.setFixedHeight(132)
@@ -62,13 +62,12 @@ class HomeWindow(QMainWindow):
         self.enzin_label.setEnabled(False)
         button_layout.addWidget(self.enzin_label)
         
-        button_layout.addSpacing(735)
-        button_layout.setContentsMargins(10, 14, 10, 20)
+        # button_layout.setContentsMargins(10, 14, 10, 14)
 
         # Create the second additional button and set its properties
         self.simulate_btn = QPushButton("", self)
         self.simulate_btn.setFixedHeight(132)
-        self.simulate_btn.setFixedWidth(165)
+        self.simulate_btn.setFixedWidth(155)
         self.simulate_btn.setFocusPolicy(Qt.NoFocus)
         
         self.simulate_btn.clicked.connect(self.on_simulate_btn_click)
@@ -89,35 +88,33 @@ class HomeWindow(QMainWindow):
         # Add the second button to the layout
         button_layout.addWidget(self.simulate_btn)
         
-        center_right_layout = QVBoxLayout()
-        center_right_layout.addWidget(self.collect, alignment=Qt.AlignLeft | Qt.AlignVCenter)
-        center_right_layout.setContentsMargins(10, 10, 10, 20)
-        
-        
+
+        # center_right_layout.setContentsMargins(10, 10, 10, 10)
         
         center_left_layout = QVBoxLayout()
-        center_left_layout.addWidget(self.info_btn, alignment=Qt.AlignRight | Qt.AlignVCenter)
-        center_left_layout.setContentsMargins(10, 10, 10, 20)
+        center_left_layout.addWidget(self.info_btn)
+
+        center_right_layout = QVBoxLayout()
+        center_right_layout.addWidget(self.collect)
+        # center_left_layout.setContentsMargins(10, 10, 10, 10)
         
         # Set up the camera_label layout
         camera_layout = QVBoxLayout(self.camera_label)
-        # camera_layout.addLayout(button_layout)
         
-        camera_layout.addLayout(center_left_layout) 
         camera_layout.addLayout(center_right_layout) 
+        camera_layout.addLayout(center_left_layout) 
+
         camera_layout.addStretch(1)  # Add stretch to push buttons to the top
 
-        container_layout.addWidget(self.camera_label, 5)
-        spacer_item = QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        container_layout.addItem(spacer_item)
-        
+        container_layout.addWidget(self.camera_label, 4)
+        container_layout.addSpacing(0)
         
         # Create a QLabel to serve as a container for the buttons
         self.button_b_container = QLabel(self)
-        self.button_b_container.setFixedHeight(200)  # Set an appropriate height
+        self.button_b_container.setFixedWidth(250)  # Set an appropriate height
         self.button_b_container.setStyleSheet(c.BUTTON_BG_PATH)  # Set the path to your image
         
-        button_b_layout = QHBoxLayout(self.button_b_container)
+        button_b_layout = QVBoxLayout(self.button_b_container)
         self.button_machine = QPushButton("", self)
         self.button_machine.setFixedHeight(132)
         self.button_machine.setFixedWidth(176)
@@ -128,21 +125,19 @@ class HomeWindow(QMainWindow):
         self.button_door.setFixedWidth(132)
         self.button_door.setEnabled(False)
         
-        button_b_layout.setContentsMargins(0, 14, 0, 14)
+        # button_b_layout.setContentsMargins(14, 14, 14, 14)
         button_b_layout.addSpacing(10)
-        button_b_layout.addWidget(self.enzin_label)
-        button_b_layout.addSpacing(25)
-        button_b_layout.addWidget(self.button_machine)
-        button_b_layout.addSpacing(38)
-        button_b_layout.addWidget(self.button_door)
-        button_b_layout.addSpacing(350)
-        button_b_layout.addWidget(self.simulate_btn)
+        button_b_layout.addWidget(self.enzin_label, alignment=QtCore.Qt.AlignCenter)
+        button_b_layout.addSpacing(20)
+        button_b_layout.addWidget(self.button_machine, alignment=QtCore.Qt.AlignCenter)
+        button_b_layout.addSpacing(20)
+        button_b_layout.addWidget(self.button_door, alignment=QtCore.Qt.AlignCenter)
+        button_b_layout.addSpacing(270)
+        button_b_layout.addWidget(self.simulate_btn, alignment=QtCore.Qt.AlignCenter)
         button_b_layout.addSpacing(10)
-        
-        # container_layout.addSpacing(100)  # Adjust as needed
+
         container_layout.addWidget(self.button_b_container, 1)
         
-        # container_layout.addLayout(button_b_layout, 1)  # 1/5 of the space for the button
         # Set the container widget as the central widget
         self.setCentralWidget(container_widget)
 
@@ -182,17 +177,15 @@ class HomeWindow(QMainWindow):
         self.info_window.showFullScreen()
         
     def init_main_window(self):
-        width = 1080
+        width = 1920
         aspect_ratio = 9 / 16  # 9:16
-        height = int(width / aspect_ratio)
+        height = int(width * aspect_ratio)
         self.setGeometry(0, 0, width, height)
         self.setStyleSheet(c.BACKGROUND_PATH)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.showFullScreen()
     
     def update_button_styles(self):
-        
-        self.collect.setStyleSheet("background-color: transparent; color: white; border: none;")
         
         machine_status = c.MACHINE_ON_PATH if self.curr_status_machine == cf.STATE_MACHINE else c.MACHINE_OFF_PATH
         door_status = c.DOOR_CLOSE_PATH if self.curr_is_wrong_open_door == cf.STATE_DOOR else c.DOOR_OPEN_PATH
@@ -284,6 +277,8 @@ class HomeWindow(QMainWindow):
             size = self.camera_label.size()
             size_list = [size.width(), size.height()]
             ret, frame = self.camera.read()
+
+            # cv2.imwrite('test.png', frame)
             
             if ret:
                 output_frame, _, is_wrong = self._logic.update(frame, size_list, False, self.simulate_yn)
