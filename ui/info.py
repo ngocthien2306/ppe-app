@@ -24,8 +24,8 @@ class InfoWindow(QMainWindow):
 
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
-        container_layout = QVBoxLayout(container_widget)
-        # container_layout.setContentsMargins(12, 12, 12, 55)
+        container_layout = QHBoxLayout(container_widget)
+        container_layout.setContentsMargins(0, 0, 0, 0)
         # Create a QLabel to display the camera feed
         self.camera_label = QLabel(self)
 
@@ -57,7 +57,7 @@ class InfoWindow(QMainWindow):
         aspect_ratio = 9 / 16  # 9:16
 
         height = int(width * aspect_ratio)
-        self.setGeometry(100, 100, width, height)
+        self.setGeometry(0, 0, width, height)
         self.setStyleSheet(c.BACKGROUND_PATH)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.showFullScreen()

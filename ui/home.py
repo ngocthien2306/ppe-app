@@ -15,12 +15,13 @@ from utils.logging import CustomLoggerConfig
 import threading
 from ui.info import InfoWindow
 from ui.flash import FlashWindow
+from ui.collect_data import CollectWindow
 import Jetson.GPIO as GPIO
 import threading
 
 class HomeWindow(QMainWindow):
     
-    def __init__(self):
+    def __init__(self, start_yn=True):
         super().__init__()
         
         if cf.CLASSIFY_ENGINE == 'YOLO':
@@ -34,16 +35,20 @@ class HomeWindow(QMainWindow):
         self.simulate_yn = False
         self.curr_value_enzim = 0
         self.is_done_detect = False
+        self.camera_is_disconnect = False
         self.curr_status_machine = None
         self.curr_is_wrong_open_door = None
         self.frame_detect_done = None
         self.count_sound = 0
         
+        self.collect_window = CollectWindow(start_yn=False)
+        self.collect_window.hide()
+
         self.flash_window = FlashWindow()
         self.flash_window.show()
         self.flash_window.raise_()
         self.info_window = InfoWindow()
-        self.info_window.close()
+        self.info_window.hide()
 
         self.init_main_window()
         
@@ -57,8 +62,8 @@ class HomeWindow(QMainWindow):
         button_layout = QVBoxLayout()
 
         self.enzin_label = QPushButton("", self)
-        self.enzin_label.setFixedHeight(132)
-        self.enzin_label.setFixedWidth(165)
+        self.enzin_label.setFixedHeight(150)
+        self.enzin_label.setFixedWidth(180)
         self.enzin_label.setEnabled(False)
         button_layout.addWidget(self.enzin_label)
         
@@ -66,8 +71,8 @@ class HomeWindow(QMainWindow):
 
         # Create the second additional button and set its properties
         self.simulate_btn = QPushButton("", self)
-        self.simulate_btn.setFixedHeight(132)
-        self.simulate_btn.setFixedWidth(155)
+        self.simulate_btn.setFixedHeight(150)
+        self.simulate_btn.setFixedWidth(177)
         self.simulate_btn.setFocusPolicy(Qt.NoFocus)
         
         self.simulate_btn.clicked.connect(self.on_simulate_btn_click)
@@ -80,24 +85,23 @@ class HomeWindow(QMainWindow):
         self.info_btn.clicked.connect(self.show_info_screen)
         
         self.collect = QPushButton("", self)
-        self.collect.setFixedHeight(100)
-        self.collect.setFixedWidth(100)
+        self.collect.setFixedHeight(132)
+        self.collect.setFixedWidth(190)
         self.collect.setFocusPolicy(Qt.NoFocus)
         self.collect.clicked.connect(self.show_collect_screen)
+        self.collect.setStyleSheet(c.COLLECT_DATA)
         
         # Add the second button to the layout
         button_layout.addWidget(self.simulate_btn)
-        
 
-        # center_right_layout.setContentsMargins(10, 10, 10, 10)
-        
         center_left_layout = QVBoxLayout()
         center_left_layout.addWidget(self.info_btn)
+        center_left_layout.setContentsMargins(10, 770, 10, 10)
 
         center_right_layout = QVBoxLayout()
         center_right_layout.addWidget(self.collect)
-        # center_left_layout.setContentsMargins(10, 10, 10, 10)
-        
+        center_right_layout.setContentsMargins(10, 30, 10, 10)
+
         # Set up the camera_label layout
         camera_layout = QVBoxLayout(self.camera_label)
         
@@ -111,18 +115,18 @@ class HomeWindow(QMainWindow):
         
         # Create a QLabel to serve as a container for the buttons
         self.button_b_container = QLabel(self)
-        self.button_b_container.setFixedWidth(250)  # Set an appropriate height
+        self.button_b_container.setFixedWidth(300)  # Set an appropriate height
         self.button_b_container.setStyleSheet(c.BUTTON_BG_PATH)  # Set the path to your image
         
         button_b_layout = QVBoxLayout(self.button_b_container)
         self.button_machine = QPushButton("", self)
-        self.button_machine.setFixedHeight(132)
-        self.button_machine.setFixedWidth(176)
+        self.button_machine.setFixedHeight(150)
+        self.button_machine.setFixedWidth(200)
         self.button_machine.setEnabled(False)
         
         self.button_door = QPushButton("", self)
-        self.button_door.setFixedHeight(130)
-        self.button_door.setFixedWidth(132)
+        self.button_door.setFixedHeight(150)
+        self.button_door.setFixedWidth(148)
         self.button_door.setEnabled(False)
         
         # button_b_layout.setContentsMargins(14, 14, 14, 14)
@@ -143,12 +147,12 @@ class HomeWindow(QMainWindow):
 
         self.update_button_styles()
         
-        # Set up the camera
-        self.init_camera()
+        if start_yn:
+            # Set up the camera
+            self.init_camera()
 
-        # Start the camera when the program starts
-        self.start_timer()
-        self.inference_timer = QTimer(self)
+            # Start the camera when the program starts
+            self.start_timer()
         
     def init_camera(self):
         self.camera = cv2.VideoCapture(0)
@@ -161,17 +165,15 @@ class HomeWindow(QMainWindow):
         print("show_collect_screen")
         self.camera.release()
         self.timer.stop()
+        self.collect_window.show()
+        self.collect_window.raise_()
+        self.collect_window.showFullScreen()
+        self.collect_window.init_camera()
+        self.collect_window.start_timer()
+        self.flash_window.close()
         self.close()
-
-        from ui.collect_data import CollectWindow
-        collect_window = CollectWindow()
-        collect_window.show()
-        collect_window.raise_()
-        collect_window.showFullScreen()
         
-    
     def show_info_screen(self):
-        self.info_window.close()
         self.info_window.show()
         self.info_window.raise_()
         self.info_window.showFullScreen()
@@ -249,8 +251,8 @@ class HomeWindow(QMainWindow):
             
     def reset_program(self):
         self.update_status_machine()
-        # if self.curr_status_machine == cf.STATE_MACHINE:
-        self.reset_ui_and_interlock()
+        if self.curr_status_machine == cf.STATE_MACHINE:
+            self.reset_ui_and_interlock()
             
     def update_logic(self):
         
@@ -277,9 +279,7 @@ class HomeWindow(QMainWindow):
             size = self.camera_label.size()
             size_list = [size.width(), size.height()]
             ret, frame = self.camera.read()
-
-            # cv2.imwrite('test.png', frame)
-            
+         
             if ret:
                 output_frame, _, is_wrong = self._logic.update(frame, size_list, False, self.simulate_yn)
                 if (self.curr_status_machine != cf.STATE_MACHINE 
@@ -302,6 +302,9 @@ class HomeWindow(QMainWindow):
                 self.gpio_handler.initialize_ready_output()
                 
             else:
+                self.camera_is_disconnect = True
+                self.show_image(cv2.imread(c.CAMERA_DISCONNECT_PATH))
+
                 self._reconnect_camera()
                 
         except Exception as e:
@@ -310,7 +313,7 @@ class HomeWindow(QMainWindow):
     def _reconnect_camera(self):
         self.logger.warning("Failed to read from the camera. Trying to reconnect...")
         self.camera.release()
-        time.sleep(5)
+        time.sleep(1)
         self.camera = cv2.VideoCapture(0)
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)

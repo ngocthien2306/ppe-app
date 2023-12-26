@@ -22,7 +22,7 @@ elif cf.CLASSIFY_ENGINE == "ANSWOME_BACKBONE":
     
 class CollectWindow(QMainWindow):
     
-    def __init__(self):
+    def __init__(self, start_yn=True):
         super().__init__()
         
         self._logic = ModelEngine()
@@ -32,39 +32,39 @@ class CollectWindow(QMainWindow):
         self.inference_yn = False
         self.sound_yn = False
         self.frame_crop = None
-        
+
+
         self.init_main_window()
 
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
         container_layout = QHBoxLayout(container_widget)
-        # container_layout.setContentsMargins(12, 12, 12, 40)
+        container_layout.setContentsMargins(0, 0, 0, 0)
         # Create a QLabel to display the camera feed
         self.camera_label = QLabel(self)
 
         button_layout = QHBoxLayout()
 
         self.enzin_label = QPushButton("", self)
-        self.enzin_label.setFixedHeight(132)
-        self.enzin_label.setFixedWidth(160)
+        self.enzin_label.setFixedHeight(150)
+        self.enzin_label.setFixedWidth(216)
         # self.enzin_label.setEnabled(False)
         self.enzin_label.clicked.connect(self.show_home)
         
-        button_layout.addWidget(self.enzin_label)
-        button_layout.addSpacing(735)
-        # button_layout.setContentsMargins(10, 14, 10, 20)
+        button_layout.addWidget(self.enzin_label, alignment=QtCore.Qt.AlignLeft)
+        button_layout.setContentsMargins(10, 30, 10, 10)
 
         # Create the second additional button and set its properties
-        self.simulate_btn = QPushButton(self.count_sample_text(), self)
+        self.info_data_label = QLabel(self.count_sample_text(), self)
         font = QFont()
         font.setPointSize(20)
-        self.simulate_btn.setFont(font)
-        self.simulate_btn.setFixedHeight(132)
-        self.simulate_btn.setFixedWidth(300)
+        self.info_data_label.setFont(font)
+        self.info_data_label.setFixedHeight(132)
+        self.info_data_label.setFixedWidth(256)
         
 
         # Add the second button to the layout
-        button_layout.addWidget(self.simulate_btn)
+        # button_layout.addWidget(self.simulate_btn)
 
         # Set up the camera_label layout
         camera_layout = QVBoxLayout(self.camera_label)
@@ -81,33 +81,34 @@ class CollectWindow(QMainWindow):
 
         # Set attributes for Pass button
         self.pass_button.setEnabled(True)
-        self.pass_button.setFixedHeight(166)
-        self.pass_button.setFixedWidth(510)
+        self.pass_button.setFixedHeight(216)
+        self.pass_button.setFixedWidth(256)
         self.pass_button.clicked.connect(self.pass_action)
 
         # Set attributes for Fail button
         self.fail_button.setEnabled(True)
-        self.fail_button.setFixedWidth(510)
-        self.fail_button.setFixedHeight(166)
+        self.fail_button.setFixedWidth(256)
+        self.fail_button.setFixedHeight(216)
         self.fail_button.clicked.connect(self.fail_action)
 
         # Create horizontal layout and add buttons to it
-        self.button_layout = QHBoxLayout()
-        self.button_layout.addWidget(self.pass_button)
-        self.button_layout.addWidget(self.fail_button)
-        
+        self.button_layout = QVBoxLayout()
+        # self.button_layout.addSpacing(10)
+        self.button_layout.addWidget(self.info_data_label, alignment=QtCore.Qt.AlignCenter)
+        self.button_layout.addSpacing(250)
+        self.button_layout.addWidget(self.pass_button, alignment=QtCore.Qt.AlignCenter)
+        self.button_layout.addSpacing(30)
+        self.button_layout.addWidget(self.fail_button, alignment=QtCore.Qt.AlignCenter)
+        self.button_layout.addSpacing(10)
         container_layout.addLayout(self.button_layout, 1)  # 1/5 of the space for the button
 
         # Set the container widget as the central widget
         self.setCentralWidget(container_widget)
 
         self.update_button_styles()
-        
-        # Set up the camera
-        self.init_camera()
-
-        # Start the camera when the program starts
-        self.start_timer()
+        if start_yn:
+            self.init_camera()
+            self.start_timer()
     
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -120,12 +121,14 @@ class CollectWindow(QMainWindow):
         self.camera.release()
         self.timer.stop()
         from ui.home import HomeWindow
-        self.close()
-        home_window = HomeWindow()
+        home_window = HomeWindow(start_yn=False)
         home_window.show()
         home_window.raise_()
         home_window.showFullScreen()
-    
+        home_window.init_camera()
+        home_window.start_timer()
+        self.close()
+
     def pass_action(self):
         img_path = os.path.join(cf.COLLECT_PATH, 'ok', f"{time.time()}_pass.png")
         cv2.imwrite(img_path, self.frame_crop)
@@ -137,13 +140,13 @@ class CollectWindow(QMainWindow):
         self.update_simulate_button_text()
 
     def update_simulate_button_text(self):
-        self.simulate_btn.setText(self.count_sample_text())
+        self.info_data_label.setText(self.count_sample_text())
 
     def count_sample_text(self):
         import glob
         fail_list_paths = glob.glob(os.path.join(cf.COLLECT_PATH, 'ng', '*.png'))
         pass_list_paths = glob.glob(os.path.join(cf.COLLECT_PATH, 'ok', '*.png'))
-        return "Pass: {0} \n Fail: {1}".format(str(len(pass_list_paths)), str(len(fail_list_paths)))
+        return " Pass: {0} \n Fail: {1}".format(str(len(pass_list_paths)), str(len(fail_list_paths)))
 
     def init_camera(self):
         self.camera = cv2.VideoCapture(0)
@@ -156,13 +159,13 @@ class CollectWindow(QMainWindow):
         width = 1080
         aspect_ratio = 9 / 16  # 9:16
         height = int(width / aspect_ratio)
-        self.setGeometry(100, 100, width, height)
+        self.setGeometry(0, 0, width, height)
         self.setStyleSheet(c.BACKGROUND_PATH)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.showFullScreen()
     
     def update_button_styles(self):
-        self.enzin_label.setStyleSheet(c.ENZIN_LABEL_NO_ENZIM_PATH)
+        self.enzin_label.setStyleSheet(c.DETECT_PATH)
         self.pass_button.setStyleSheet(c.PASS_PATH)
         self.fail_button.setStyleSheet(c.FAIL_PATH)
     

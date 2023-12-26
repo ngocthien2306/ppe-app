@@ -43,4 +43,4 @@ with jtop() as jetson:
         df = pd.DataFrame(columns=columns)
 
         # Wait for 15 seconds before the next iteration
-        time.sleep(60)
+        time.sleep(1)

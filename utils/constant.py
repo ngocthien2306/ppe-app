@@ -17,8 +17,8 @@ class Constant(BaseSettings):
     DISABLE_SIMULATE_PATH: str = generate_style(icon_path("detect-off.png"))
     DISABLE_BUTTON_PATH: str = generate_style(icon_path("Disable Detect Button highligt.png"))
     BACKGROUND_PATH: str = generate_style(icon_path("Mask group landscape.png"))
-    PASS_PATH: str = generate_style(icon_path("button pass.png"))
-    FAIL_PATH: str = generate_style(icon_path("button fail.png"))
+    PASS_PATH: str = generate_style(icon_path("button-pass.png"))
+    FAIL_PATH: str = generate_style(icon_path("button-fail.png"))
     INFO_PATH: str = generate_style(icon_path("About.png"))
     CLOSE_PATH: str = generate_style(icon_path("Button Close.png"))
     INFO_BACKGROUND_PATH: str = icon_path("Info.png")
@@ -28,7 +28,9 @@ class Constant(BaseSettings):
     MACHINE_ON_PATH: str = generate_style(icon_path("machine-on.png"))
     MACHINE_OFF_PATH: str = generate_style(icon_path("machine-off.png"))
     BUTTON_BG_PATH: str = generate_style(icon_path("Rectangle 208.png"))
-    
+    COLLECT_DATA: str = generate_style(icon_path("collect_data.png"))
+    DETECT_PATH: str = generate_style(icon_path("detect-program.png"))
+    CAMERA_DISCONNECT_PATH: str = icon_path("camera_disconnected.jpg")
 
 constant = Constant()
     
