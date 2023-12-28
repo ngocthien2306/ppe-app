@@ -32,8 +32,8 @@ class HomeWindow(QMainWindow):
         self._logic = ModelEngine()
         self.gpio_handler = GPIOHandler()
         self.logger = CustomLoggerConfig.configure_logger()
-        self.simulate_yn = False
-        self.curr_value_enzim = 0
+        self.simulate_yn = None
+        self.curr_value_enzim = None
         self.is_done_detect = False
         self.camera_is_disconnect = False
         self.curr_status_machine = None
@@ -279,7 +279,6 @@ class HomeWindow(QMainWindow):
             size = self.camera_label.size()
             size_list = [size.width(), size.height()]
             ret, frame = self.camera.read()
-         
             if ret:
                 output_frame, _, is_wrong = self._logic.update(frame, size_list, False, self.simulate_yn)
                 if (self.curr_status_machine != cf.STATE_MACHINE 

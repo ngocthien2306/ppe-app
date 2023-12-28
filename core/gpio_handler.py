@@ -20,7 +20,6 @@ class GPIOHandler:
         
         GPIO.output(cf.GPIO_SOUND, not cf.STATE_BUZER)
 
-
     def initialize_ready_output(self):  
         if self._is_first_time :
             GPIO.output(cf.GPIO_READY, cf.STATE_READY)
@@ -36,7 +35,6 @@ class GPIOHandler:
             
         self.update_button_style_yn = True
     
-        
     def output_sound(self, pass_yn=False):
         # Create a separate thread for the sound output
         sound_thread = threading.Thread(target=self._output_sound_in_thread, args={pass_yn})
@@ -50,8 +48,7 @@ class GPIOHandler:
                 time.sleep(0.2)
                 GPIO.output(cf.GPIO_SOUND, not cf.STATE_BUZER)
                 time.sleep(0.1)
-
-            
+      
     # mode 'ON' =  GPIO.LOW
     
     def output_pass(self, mode="ON"):
@@ -60,8 +57,8 @@ class GPIOHandler:
         sound_thread.start()
         
     def _output_pass_in_thread(self, mode='ON'):
-        print(mode)
         if mode == 'ON':
+            print(mode)
             GPIO.output(cf.GPIO_RESULT, not cf.STATE_INTERLOCK)
         else:
             GPIO.output(cf.GPIO_RESULT, cf.STATE_INTERLOCK)

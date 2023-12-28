@@ -1,6 +1,6 @@
 import sys
 import cv2
-from PyQt5.QtWidgets import QMainWindow, QPushButton, QWidget, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy, QHBoxLayout
+from PyQt5.QtWidgets import QMainWindow, QPushButton, QWidget, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy, QHBoxLayout, QStackedLayout
 from PyQt5.QtGui import QImage, QPixmap, QFont, QIcon
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5 import QtCore
@@ -16,12 +16,14 @@ import threading
 import os
 
 class InfoWindow(QMainWindow):
+
     def __init__(self):
         super().__init__()
-        
-        self.logger = CustomLoggerConfig.configure_logger()
+
+        # Initialize the main window
         self.init_main_window()
 
+        
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
         container_layout = QHBoxLayout(container_widget)
@@ -29,29 +31,31 @@ class InfoWindow(QMainWindow):
         # Create a QLabel to display the camera feed
         self.camera_label = QLabel(self)
 
-        container_layout.addWidget(self.camera_label, 4)
-        # spacer_item = QSpacerItem(0, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        # container_layout.addItem(spacer_item)
+        # Create a new button and set its properties
+        self.close_btn = QPushButton("", self)
+        self.close_btn.setFixedHeight(30)
+        self.close_btn.setFixedWidth(30)
+        self.close_btn.clicked.connect(self.close_window)
+        self.close_btn.setFocusPolicy(Qt.NoFocus)
+
+
+        center_left_layout = QVBoxLayout()
+        center_left_layout.addWidget(self.close_btn, alignment=QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        center_left_layout.setContentsMargins(10, 10, 10, 10)
+
+
+        # Set up the camera_label layout
+        camera_layout = QVBoxLayout(self.camera_label)
         
-        # Create buttons
-        self.close_button = QPushButton("", self)
+        camera_layout.addLayout(center_left_layout) 
 
-        # Set attributes for Pass button
-        self.close_button.setEnabled(True)
-        self.close_button.setFixedHeight(166)
-        self.close_button.clicked.connect(self.close_window)
+        camera_layout.addStretch(1)  # Add stretch to push buttons to the top
 
-        # Create horizontal layout and add buttons to it
-        self.button_layout = QHBoxLayout()
-        self.button_layout.addWidget(self.close_button)
-        
-        container_layout.addLayout(self.button_layout, 1)  # 1/5 of the space for the button
-
-        # Set the container widget as the central widget
+        container_layout.addWidget(self.camera_label, 1)
         self.setCentralWidget(container_widget)
         self.show_background()
         self.update_button_styles()
-        
+
     def init_main_window(self):
         width = 1920
         aspect_ratio = 9 / 16  # 9:16
@@ -63,7 +67,8 @@ class InfoWindow(QMainWindow):
         self.showFullScreen()
     
     def update_button_styles(self):
-        self.close_button.setStyleSheet(c.CLOSE_PATH)
+        print()
+        self.close_btn.setStyleSheet(c.CLOSE_PATH)
     
     def start_timer(self):
         time.sleep(3)
@@ -77,7 +82,6 @@ class InfoWindow(QMainWindow):
         height, width, _ = output_frame.shape
         bytes_per_line = 3 * width
         q_image = QImage(output_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
         self.camera_label.setPixmap(QPixmap.fromImage(q_image))
     
     def close_window(self):
