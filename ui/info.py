@@ -23,7 +23,6 @@ class InfoWindow(QMainWindow):
         # Initialize the main window
         self.init_main_window()
 
-        
         # Create a container widget to hold camera and button
         container_widget = QWidget(self)
         container_layout = QHBoxLayout(container_widget)
