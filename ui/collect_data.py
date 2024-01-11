@@ -45,13 +45,15 @@ class CollectWindow(QMainWindow):
 
         button_layout = QHBoxLayout()
 
-        self.enzin_label = QPushButton("", self)
-        self.enzin_label.setFixedHeight(150)
-        self.enzin_label.setFixedWidth(216)
-        # self.enzin_label.setEnabled(False)
-        self.enzin_label.clicked.connect(self.show_home)
+        self.home_btn = QPushButton("", self)
+        self.home_btn.setFixedHeight(150)
+        self.home_btn.setFixedWidth(216)
+        # self.home_btn.setEnabled(False)
+        self.home_btn.clicked.connect(self.show_home)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.enable_home_button)
         
-        button_layout.addWidget(self.enzin_label, alignment=QtCore.Qt.AlignLeft)
+        button_layout.addWidget(self.home_btn, alignment=QtCore.Qt.AlignLeft)
         button_layout.setContentsMargins(10, 30, 10, 10)
 
         # Create the second additional button and set its properties
@@ -118,6 +120,9 @@ class CollectWindow(QMainWindow):
             print("Right mouse button double-clicked")
     
     def show_home(self):
+        self.home_btn.setEnabled(False)
+        # Start the timer to enable the button after 5000 milliseconds (5 seconds)
+        self.timer.start(5000)
         self.camera.release()
         self.timer.stop()
         from ui.home import HomeWindow
@@ -128,6 +133,11 @@ class CollectWindow(QMainWindow):
         home_window.init_camera()
         home_window.start_timer()
         self.close()
+
+    def enable_home_button(self):
+        # Enable the button when the timer times out
+        self.home_btn.setEnabled(True)
+        self.timer.stop()
 
     def pass_action(self):
         img_path = os.path.join(cf.COLLECT_PATH, 'ok', f"{time.time()}_pass.png")
@@ -165,7 +175,7 @@ class CollectWindow(QMainWindow):
         self.showFullScreen()
     
     def update_button_styles(self):
-        self.enzin_label.setStyleSheet(c.DETECT_PATH)
+        self.home_btn.setStyleSheet(c.DETECT_PATH)
         self.pass_button.setStyleSheet(c.PASS_PATH)
         self.fail_button.setStyleSheet(c.FAIL_PATH)
     

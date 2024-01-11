@@ -42,7 +42,7 @@ class ProjectConfig(BaseSettings):
     STATE_ENZYME = 0 # Enzyme on
     STATE_DOOR = 1 # Close
     
-    STATE_BUZER = 0 # on
+    STATE_BUZER = 1 # on
     STATE_READY = 1 # system ready
     
     
